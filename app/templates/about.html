@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}About · Economic Dashboard{% endblock %}
+{% block content %}
+<div class="prose">
+<h1>About this dashboard</h1>
+<p class="muted">Economic data for the world, Europe and Germany, collected from public statistical APIs and stored locally. Data last updated {{ updated }}.</p>
+
+<h2>Data sources</h2>
+<table>
+  <thead><tr><th>Provider</th><th>Used for</th></tr></thead>
+  <tbody>
+  {% for name, url, what in providers %}
+  <tr><td><a href="{{ url }}" rel="noopener">{{ name }}</a></td><td>{{ what }}</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+<h2>How to read the numbers</h2>
+<ul>
+  <li><strong>Real growth</strong> is adjusted for price changes. Sector growth uses chain-linked volume indices, so inflation is not counted as growth.</li>
+  <li>The <strong>real GDP index (2019 = 100)</strong> is chained from yearly real growth rates of the World Bank.</li>
+  <li>Quarterly and monthly German series are <strong>seasonally and calendar adjusted</strong>; changes compare a period with the same period a year earlier.</li>
+  <li><strong>Forecasts</strong> (IMF) are marked as such in the tile label and come from the World Economic Outlook.</li>
+  <li>Published figures are revised. Each data refresh replaces the stored series with the latest revision.</li>
+  <li>Inflation (HICP) for Europe follows the 2026 switch of Eurostat to the ECOICOP 2 classification.</li>
+</ul>
+
+<h2>Indicator catalogue</h2>
+<table>
+  <thead><tr><th>Indicator</th><th>Source</th><th>Unit</th><th>Coverage</th></tr></thead>
+  <tbody>
+  {% for i in indicators %}
+  <tr><td>{{ i.name }}</td><td>{{ i.source }}</td><td>{{ i.unit }}</td><td>{% if i.first_period %}{{ i.first_period }} – {{ i.last_period }}, {{ i.countries }} {{ 'country' if i.countries == 1 else 'countries/regions' }}{% else %}no data{% endif %}</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+<p class="muted">The same catalogue is available as JSON at <a href="/api/indicators">/api/indicators</a>; interactive API documentation is at <a href="/docs">/docs</a>.</p>
+</div>
+{% endblock %}

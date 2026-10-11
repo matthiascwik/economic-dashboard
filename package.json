@@ -1,0 +1,7 @@
+{
+  "name": "economic-dashboard",
+  "private": true,
+  "description": "Browser smoke test for the dashboard pages (runs the page scripts in jsdom)",
+  "scripts": { "smoke": "node tests/smoke/pages.cjs" },
+  "devDependencies": { "jsdom": "^24.1.3" }
+}

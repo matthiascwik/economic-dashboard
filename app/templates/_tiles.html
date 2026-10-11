@@ -1,0 +1,33 @@
+{% macro tile(t) %}
+<article class="tile{% if not t.empty %} tile-clickable{% endif %}"
+  {% if not t.empty %}tabindex="0" role="button" aria-haspopup="dialog" aria-label="{{ t.label }}: {{ t.value }}. Show history chart"
+  data-label="{{ t.label }}" data-indicator="{{ t.indicator }}" data-country="{{ t.country }}" data-fmt="{{ t.fmt }}"
+  data-unit="{{ t.unit }}" data-source="{{ t.source }}" data-forecast-from="{{ t.forecast_from or '' }}"{% endif %}>
+  <h3 class="tile-label">{{ t.label }}</h3>
+  {% if t.empty %}
+  <p class="tile-value muted">n/a</p>
+  {% else %}
+  <p class="tile-value">{{ t.value }}</p>
+  <p class="tile-delta">
+    {% if t.delta %}
+    <span class="delta-icon tone-{{ t.delta.tone }}" aria-hidden="true">{% if t.delta.direction == 'up' %}▲{% elif t.delta.direction == 'down' %}▼{% else %}■{% endif %}</span>
+    <span>{{ t.delta.text }} <span class="muted">vs {{ t.delta.since }}</span></span>
+    {% else %}<span class="muted">No earlier period</span>{% endif %}
+  </p>
+  <div class="spark" data-points='{{ t.trend | tojson | forceescape }}'
+       role="img" aria-label="Trend {{ t.trend[0].period }} to {{ t.trend[-1].period }}: {{ '%.1f' % t.trend[0].value }} to {{ '%.1f' % t.trend[-1].value }}"></div>
+  <p class="tile-source"><span>{{ t.source }} · {{ t.period }}</span><span class="tile-hint" aria-hidden="true">History ↗</span></p>
+  {% endif %}
+</article>
+{% endmacro %}
+
+{% macro section(s, link=False) %}
+<section class="kpi-section">
+  <div class="section-head">
+    <h2>{{ s.title }}</h2>
+    <p class="muted">{{ s.subtitle }}</p>
+    {% if link %}<a class="more" href="/{{ s.scope }}">All {{ s.title }} indicators →</a>{% endif %}
+  </div>
+  <div class="tile-grid">{% for t in s.tiles %}{{ tile(t) }}{% endfor %}</div>
+</section>
+{% endmacro %}

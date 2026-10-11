@@ -1,0 +1,40 @@
+# Economic Dashboard: a small always-on web container and a nightly data refresh.
+# Both are resource-limited and low priority so that other services on the same host are never starved.
+# Set DESTATIS_TOKEN in a .env file next to this file, or replace ${DESTATIS_TOKEN:-} below.
+name: economic-dashboard
+
+x-common: &common
+  image: economic-dashboard:0.1.0
+  restart: unless-stopped
+  read_only: true
+  tmpfs: [/tmp]
+  cap_drop: [ALL]
+  security_opt: ["no-new-privileges:true"]
+  volumes: ["dashboard-data:/app/data"]
+  pids_limit: 100
+
+services:
+  web:
+    <<: *common
+    ports: ["8765:8765"]            # http://<host>:8765
+    environment:
+      TZ: Europe/Berlin
+    mem_limit: 256m
+    cpus: 0.5
+    cpu_shares: 256                 # default is 1024: under CPU contention other containers win
+    oom_score_adj: 500              # if memory runs out, the kernel stops this container before important ones
+
+  etl:
+    <<: *common
+    command: ["nice", "-n", "19", "python", "-m", "etl.schedule"]
+    environment:
+      TZ: Europe/Berlin
+      ETL_RUN_AT: "04:30"           # daily refresh, local time
+      DESTATIS_TOKEN: ${DESTATIS_TOKEN:-}
+    mem_limit: 512m
+    cpus: 0.5
+    cpu_shares: 128
+    oom_score_adj: 900
+
+volumes:
+  dashboard-data:

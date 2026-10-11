@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% from "_tiles.html" import section %}
+{% from "_cards.html" import card, range_filter %}
+{% block title %}{{ sections[0].title }} · Economic Dashboard{% endblock %}
+{% block content %}
+<h1>{{ sections[0].title }}</h1>
+{{ section(sections[0]) }}
+{% set scope = sections[0].scope %}
+{{ range_filter() }}
+{% if scope == 'world' %}
+<div class="chart-grid">
+  {{ card("map", "The world at a glance", "", "World Bank", wide=True) }}
+  {{ card("gdp-index", "Real GDP, 2019 = 100", "", "World Bank (chained from real growth rates)") }}
+  {{ card("scatter", "Growth versus inflation", "", "World Bank") }}
+</div>
+{% elif scope == 'germany' %}
+<div class="chart-grid">
+  {{ card("bars", "Where is Germany growing in real terms?", "", "Destatis, national accounts and production index", wide=True) }}
+  {{ card("heatmap", "Real growth by sector and year", "", "Destatis, national accounts", wide=True) }}
+  {{ card("treemap", "What the economy is made of", "", "Destatis, national accounts") }}
+  {{ card("connected", "Industrial production against new orders", "Each point is a month; the dashed lines mark the 2021 level.", "Destatis") }}
+</div>
+{% elif scope == 'europe' %}
+<div class="chart-grid">
+  {{ card("map", "Europe at a glance", "", "Eurostat, World Bank", wide=True) }}
+  {{ card("gdp-index", "Real GDP, 2019 = 100", "", "World Bank (chained from real growth rates)") }}
+  {{ card("hicp", "Inflation (HICP), % year on year", "Monthly.", "Eurostat") }}
+  {{ card("industry", "Industrial production, 2021 = 100", "Monthly, calendar and seasonally adjusted.", "Eurostat") }}
+  {{ card("rank", "GDP per capita (PPP): where Germany ranks", "Rank among ten large European economies; the dot labels show the value.", "World Bank") }}
+</div>
+{% endif %}
+{% endblock %}
+{% block scripts %}
+{% set scope = sections[0].scope %}
+{% if scope in ('world', 'europe', 'germany') %}
+{% for f in ['choropleth', 'scatter', 'slope', 'bars', 'heatmap', 'treemap', 'connected'] %}<script src="{{ url_for('static', path='js/charts/' ~ f ~ '.js') }}"></script>{% endfor %}
+<script src="{{ url_for('static', path='js/pages/shared.js') }}"></script>
+<script src="{{ url_for('static', path='js/pages/' ~ scope ~ '.js') }}"></script>
+{% endif %}
+{% endblock %}

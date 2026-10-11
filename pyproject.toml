@@ -1,0 +1,26 @@
+[project]
+name = "economic-dashboard"
+version = "0.2.1"
+description = "Server-side dashboard of world, European and German economic data (D3.js)"
+license = "MIT"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi",
+    "uvicorn[standard]",
+    "jinja2",
+    "httpx",
+    "pyyaml",
+]
+
+[project.optional-dependencies]
+dev = ["pytest", "ruff"]
+
+[tool.setuptools]
+packages = ["app", "etl"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+
+[tool.ruff.lint]
+ignore = ["C408"]  # dict(...) keeps the KPI specs compact

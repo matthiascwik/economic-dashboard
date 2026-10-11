@@ -1,0 +1,151 @@
+# Indicator catalogue: one entry per series the dashboard shows.
+# Sections: world | europe | sectors | germany. Codes are the source's own identifiers.
+# Optional `range: [lo, hi]` is checked by `python -m etl.quality`.
+
+# First year to load for every series.
+start_year: 2010
+
+world:
+  - id: gdp_growth
+    name: Real GDP growth
+    unit: "% yoy"
+    source: worldbank
+    code: NY.GDP.MKTP.KD.ZG
+  - id: gdp_usd
+    name: GDP (current US$)
+    unit: US$
+    source: worldbank
+    code: NY.GDP.MKTP.CD
+  - id: gdp_per_capita_ppp
+    name: GDP per capita (PPP)
+    unit: "int. $"
+    source: worldbank
+    code: NY.GDP.PCAP.PP.CD
+  - id: inflation
+    name: Inflation, consumer prices
+    unit: "% yoy"
+    source: worldbank
+    code: FP.CPI.TOTL.ZG
+  - id: unemployment
+    name: Unemployment rate
+    unit: "% of labour force"
+    source: worldbank
+    code: SL.UEM.TOTL.ZS
+    range: [0, 100]
+  - id: trade_share
+    name: Exports of goods and services
+    unit: "% of GDP"
+    source: worldbank
+    code: NE.EXP.GNFS.ZS
+  - id: manufacturing_share
+    name: Manufacturing, value added
+    unit: "% of GDP"
+    source: worldbank
+    code: NV.IND.MANF.ZS
+    range: [0, 100]
+  - id: gdp_growth_forecast
+    name: Real GDP growth (IMF forecast)
+    unit: "% yoy"
+    source: imf
+    code: NGDP_RPCH
+  - id: gov_debt
+    name: General government gross debt
+    unit: "% of GDP"
+    source: imf
+    code: GGXWDG_NGDP
+  - id: current_account
+    name: Current account balance
+    unit: "% of GDP"
+    source: imf
+    code: BCA_NGDPD
+
+europe:
+  - id: hicp_inflation
+    name: HICP inflation (monthly)
+    unit: "% yoy"
+    source: eurostat
+    code: prc_hicp_minr  # ECOICOP ver.2; replaces prc_hicp_manr, which ends in 2025-12
+    params: {coicop18: TOTAL, unit: RCH_A}
+  - id: unemployment_monthly
+    name: Unemployment rate (monthly)
+    unit: "% of labour force"
+    source: eurostat
+    code: une_rt_m
+    params: {age: TOTAL, sex: T, unit: PC_ACT, s_adj: SA}
+    range: [0, 100]
+  - id: industrial_production
+    name: Industrial production index (2021=100)
+    unit: index
+    source: eurostat
+    code: sts_inpr_m
+    params: {nace_r2: B-D, s_adj: SCA, unit: I21}
+  - id: ecb_main_rate
+    name: ECB main refinancing rate
+    unit: "%"
+    source: ecb
+    code: FM/B.U2.EUR.4F.KR.MRR_FR.LEV
+
+sectors:
+  # Real gross value added by NACE sector, chain-linked volumes (2015=100).
+  # Used for Europe and Germany (geo=DE) - the basis for "real growth per sector".
+  - id: gva_volume_index
+    name: Gross value added, chain-linked volume index
+    unit: "index 2015=100"
+    source: eurostat
+    code: nama_10_a10
+    params: {unit: CLV_I15, na_item: B1G}
+    nace_sectors: [A, B-E, C, F, G-I, J, K, L, M_N, O-Q, R-U]
+    nace_labels:
+      A: Agriculture, forestry and fishing
+      B-E: Industry (incl. energy and mining)
+      C: Manufacturing
+      F: Construction
+      G-I: Trade, transport, accommodation and food service
+      J: Information and communication
+      K: Financial and insurance activities
+      L: Real estate activities
+      M_N: Professional, scientific and business services
+      O-Q: Public administration, education and health
+      R-U: Arts, entertainment and other services
+
+germany:
+  # Destatis GENESIS tables (needs DESTATIS_TOKEN). `params` pins every dimension except
+  # time and series; keys are Destatis variable codes, values attribute codes.
+  - id: de_gva_quarterly
+    name: Gross value added by industry, price-adjusted chain index (2020=100), seasonally adjusted
+    unit: "index 2020=100"
+    source: destatis
+    code: 81000-0014
+    params: {WERT05: X13JDKSB, VGRPB5: VGRPKM}
+    series_var: WZ08G2
+    time_var: QUARTG
+  - id: de_production_index
+    name: Production index in manufacturing by branch, calendar and seasonally adjusted (2021=100)
+    unit: "index 2021=100"
+    source: destatis
+    code: 42153-0001
+    params: {WERT03: X13JDKSB}
+    series_var: WZ08V1
+    time_var: MONAT
+  - id: de_gva_annual_index
+    name: Gross value added by industry, annual, price-adjusted chain index (2020=100)
+    unit: "index 2020=100"
+    source: destatis
+    code: 81000-0013
+    params: {VGRPB5: VGRPKM}
+    series_var: WZ08G2
+  - id: de_gva_annual_current
+    name: Gross value added by industry, annual, at current prices
+    unit: "bn EUR"
+    source: destatis
+    code: 81000-0013
+    params: {VGRPB5: VGRJPM}
+    series_var: WZ08G2
+  - id: de_new_orders
+    name: New orders in manufacturing, volume index, calendar and seasonally adjusted (2021=100)
+    unit: "index 2021=100"
+    source: destatis
+    code: 42151-0004
+    params: {WERT03: X13JDKSB, ABSATZ: INSGESAMT}
+    series_var: WZ08Y1
+    time_var: MONAT

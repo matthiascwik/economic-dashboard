@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}{{ status }} · Economic Dashboard{% endblock %}
+{% block content %}
+<div class="error-page">
+  <h1>{{ status }}</h1>
+  <p class="muted">{{ message }}</p>
+  <p><a class="more" href="/">← Back to the overview</a></p>
+</div>
+{% endblock %}

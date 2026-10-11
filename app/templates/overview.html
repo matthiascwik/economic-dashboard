@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% from "_tiles.html" import section %}
+{% block content %}
+<h1>How is the economy doing?</h1>
+<p class="lede muted">Headline indicators for Germany, Europe and the world. Change is shown against the previous period.</p>
+{% for s in sections %}{{ section(s, link=True) }}{% endfor %}
+{% endblock %}

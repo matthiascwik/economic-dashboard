@@ -1,0 +1,16 @@
+{% macro card(id, title, note, source, wide=False) %}
+<section class="chart-card{% if wide %} wide{% endif %}" id="{{ id }}">
+  <header class="chart-head">
+    <div><h2>{{ title }}</h2><p class="muted chart-note">{{ note }}</p></div>
+    <div class="controls"></div>
+  </header>
+  <div class="plot"></div>
+  <div class="legend"></div>
+  <div class="table-wrap" hidden></div>
+  <footer class="chart-foot"><span class="muted">Source: {{ source }}</span><button class="table-toggle" type="button">View as table</button></footer>
+</section>
+{% endmacro %}
+
+{% macro range_filter() %}
+<div class="filters"><span class="muted">Time range</span><div id="range-filter" class="segmented" role="group" aria-label="Time range"></div><span class="muted filter-note">Applies to time-series charts</span></div>
+{% endmacro %}
